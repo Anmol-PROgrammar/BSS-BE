@@ -29,7 +29,7 @@ let transporter = nodemailer.createTransport({
 // Define route to handle form submission
 app.post("/send-email", (req, res) => {
   // Extract form data from request body
-  const { name, email, message } = req.body;
+  const { fullName, email, phoneNumber, message } = req.body;
 
   // Read HTML template file
   let template = fs.readFileSync(
@@ -38,20 +38,45 @@ app.post("/send-email", (req, res) => {
   );
 
   //  Replace placeholders with dynamic data
-  template = template.replace("{{name}}", name).replace("{{message}}", message);
+  template = template
+    .replace("{{fullName}}", fullName)
+    .replace("{{fullName}}", fullName)
+    .replace("{{email}}", email)
+    .replace("{{phoneNumber}}", phoneNumber)
+    .replace("{{message}}", message);
 
   // Configure the mailoptions object
   let mailOptions = {
     from: process.env.EMAIL_USER, // Sender email
     to: email, // Recipient email (user)
-    bcc: "anmolrawatdgs@gmail.com", // Owner hidden in BCC
+    bcc: process.env.EMAIL_OWNER, // Owner hidden in BCC
     subject: "Welcome!", // Email subject
     html: template, // Final HTML body
     attachments: [
       {
-        filename: "logo.png", // File name of image
+        filename: "android-chrome-192x192.png", // File fullName of image
         path: "./assets/android-chrome-192x192.png", // Path to image file
-        cid: "logoImage", // Must match cid in HTML
+        cid: "logo", // Must match cid in HTML
+      },
+      {
+        filename: "icons8-instagram-logo-94.png",
+        path: "./assets/icons8-instagram-logo-94.png",
+        cid: "instaLogo",
+      },
+      {
+        filename: "icons8-facebook-48.png",
+        path: "./assets/icons8-facebook-48.png",
+        cid: "facebookLogo",
+      },
+      {
+        filename: "icons8-x-50.png",
+        path: "./assets/icons8-x-50.png",
+        cid: "twiiterLogo",
+      },
+      {
+        filename: "icons8-linkedin-logo-48.png",
+        path: "./assets/icons8-linkedin-logo-48.png",
+        cid: "linkedinLogo",
       },
     ],
   };

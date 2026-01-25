@@ -1,25 +1,291 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="UTF-8" />
+    <title>Email Template</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        color: #333;
+      .nav-button {
+        background-color: #222;
+        border-radius: 4px;
+        border-style: none;
+        box-sizing: border-box;
+        color: #fff;
+        cursor: pointer;
+        display: inline-block;
+        font-family: "Farfetch Basis", "Helvetica Neue", Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.5;
+        margin: 0;
+        max-width: 160px;
+        min-height: 44px;
+        min-width: 10px;
+        outline: none;
+        overflow: hidden;
+        padding: 9px 20px 8px;
+        position: relative;
+        text-align: center;
+        text-transform: none;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        width: 100%;
       }
-      .header {
-        color: #4caf50;
-      }
-      .footer {
-        font-size: 12px;
-        color: #888;
+
+      .nav-button:hover,
+      .nav-button:focus {
+        opacity: 0.75;
       }
     </style>
   </head>
-  <body>
-    <h1 class="header">Hello {{name}},</h1>
-    <p>Thanks for contacting us. Here’s your message:</p>
-    <div>{{message}}</div>
-    <img src="cid:logoImage" alt="Logo" style="width: 150px" />
-    <p class="footer">© 2026 My Company</p>
+
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+    "
+  >
+    <!-- Outer wrapper -->
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background-color: #f4f4f4"
+    >
+      <tr>
+        <td align="center">
+          <!-- Main container -->
+          <table
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            style="background-color: #ffffff; margin: 40px 0"
+          >
+            <!-- Header -->
+            <tr>
+              <td style="background-color: #000000; padding: 20px">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="150" align="left" valign="middle">
+                      <img
+                        src="cid:logo"
+                        alt="Logo"
+                        width="120"
+                        style="display: block"
+                      />
+                    </td>
+                    <td
+                      align="left"
+                      valign="middle"
+                      style="color: #9e1918; font-weight: bold; font-size: 16px"
+                    >
+                      BLACK SHADOW SECURITY &amp; MANPOWER SERVICES PRIVATE
+                      LIMITED
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td
+                style="
+                  padding: 30px;
+                  color: #333333;
+                  font-size: 14px;
+                  line-height: 1.6;
+                "
+              >
+                <h2 style="margin: 0 0 15px 0; color: #000000">
+                  Hello {{fullName}},
+                </h2>
+
+                <p style="margin: 0 0 15px 0">
+                  Thank you for contacting
+                  <strong
+                    >Black Shadow Security &amp; Manpower Services Pvt.
+                    Ltd.</strong
+                  >
+                </p>
+
+                <p style="margin: 0 0 15px 0">
+                  We have received your inquiry and our team will review your
+                  requirements shortly. One of our representatives will get in
+                  touch with you as soon as possible.
+                </p>
+
+                <!-- Submitted Details -->
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="margin-top: 20px; border: 1px solid #e0e0e0"
+                >
+                  <tr>
+                    <td
+                      style="
+                        padding: 12px;
+                        background-color: #f7f7f7;
+                        font-weight: bold;
+                      "
+                    >
+                      Contact Details
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="padding: 12px">
+                      <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td
+                            width="30%"
+                            style="padding: 6px 0; font-weight: bold"
+                          >
+                            Full Name:
+                          </td>
+                          <td width="70%" style="padding: 6px 0">
+                            {{fullName}}
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="padding: 6px 0; font-weight: bold">
+                            Email ID:
+                          </td>
+                          <td style="padding: 6px 0">{{email}}</td>
+                        </tr>
+
+                        <tr>
+                          <td style="padding: 6px 0; font-weight: bold">
+                            Phone Number:
+                          </td>
+                          <td style="padding: 6px 0">{{phoneNumber}}</td>
+                        </tr>
+
+                        <tr>
+                          <td
+                            style="
+                              padding: 6px 0;
+                              font-weight: bold;
+                              vertical-align: top;
+                            "
+                          >
+                            Message:
+                          </td>
+                          <td style="padding: 6px 0">{{message}}</td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Visit our site navigation -->
+            <tr align="center" valign="middle">
+              <td>
+                <a
+                  href="https://www.google.com"
+                  class="nav-button"
+                  role="button"
+                  style="
+                    text-decoration: none;
+                    color: whitesmoke;
+                    margin-bottom: 2rem;
+                  "
+                  >Visit our Site</a
+                >
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  padding: 15px;
+                  font-size: 12px;
+                  color: #888888;
+                  background-color: #fafafa;
+                "
+              >
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <!-- LEFT SIDE -->
+                    <td align="left" valign="middle">
+                      © 2026 Black Shadow Security & Manpower Services Pvt. Ltd.
+                    </td>
+
+                    <!-- RIGHT SIDE -->
+                    <td align="right" valign="middle">Connect With Us:</td>
+                    <td align="right" valign="middle">
+                      <a
+                        href="https://www.instagram.com/yourpage"
+                        target="_blank"
+                        style="text-decoration: none"
+                      >
+                        <img
+                          src="cid:instaLogo"
+                          alt="Instagram"
+                          width="18"
+                          style="display: block; border: 0"
+                        />
+                      </a>
+                    </td>
+
+                    <td align="right" valign="middle">
+                      <a
+                        href="https://www.facebook.com/yourpage"
+                        target="_blank"
+                        style="text-decoration: none"
+                      >
+                        <img
+                          src="cid:facebookLogo"
+                          alt="Facebook"
+                          width="18"
+                          style="display: block; border: 0"
+                        />
+                      </a>
+                    </td>
+
+                    <td align="right" valign="middle">
+                      <a
+                        href="https://twitter.com/yourpage"
+                        target="_blank"
+                        style="text-decoration: none"
+                      >
+                        <img
+                          src="cid:twiiterLogo"
+                          alt="Twitter"
+                          width="18"
+                          style="display: block; border: 0"
+                        />
+                      </a>
+                    </td>
+
+                    <td align="right" valign="middle">
+                      <a
+                        href="https://www.linkedin.com/company/yourpage"
+                        target="_blank"
+                        style="text-decoration: none"
+                      >
+                        <img
+                          src="cid:linkedinLogo"
+                          alt="LinkedIn"
+                          width="18"
+                          style="display: block; border: 0"
+                        />
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>
