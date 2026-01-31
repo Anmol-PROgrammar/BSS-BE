@@ -1,5 +1,6 @@
 require("dotenv").config({ quiet: true });
 
+const cors = require("cors");
 const express = require("express");
 
 // Import the Nodemailer library
@@ -14,6 +15,13 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
+// app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:4200"],
+    methods: ["POST"],
+  }),
+);
 
 // Create a transporter object
 let transporter = nodemailer.createTransport({
@@ -29,7 +37,7 @@ let transporter = nodemailer.createTransport({
 // Define route to handle form submission
 app.post("/send-email", (req, res) => {
   // Extract form data from request body
-  const { fullName, email, phoneNumber, message } = req.body;
+  const { FullName, EmailId, PhoneNumber, Message } = req.body;
 
   // Read HTML template file
   let template = fs.readFileSync(
@@ -39,16 +47,16 @@ app.post("/send-email", (req, res) => {
 
   //  Replace placeholders with dynamic data
   template = template
-    .replace("{{fullName}}", fullName)
-    .replace("{{fullName}}", fullName)
-    .replace("{{email}}", email)
-    .replace("{{phoneNumber}}", phoneNumber)
-    .replace("{{message}}", message);
+    .replace("{{fullName}}", FullName)
+    .replace("{{fullName}}", FullName)
+    .replace("{{email}}", EmailId)
+    .replace("{{phoneNumber}}", PhoneNumber)
+    .replace("{{message}}", Message);
 
   // Configure the mailoptions object
   let mailOptions = {
     from: process.env.EMAIL_USER, // Sender email
-    to: email, // Recipient email (user)
+    to: EmailId, // Recipient email (user)
     bcc: process.env.EMAIL_OWNER, // Owner hidden in BCC
     subject: "Welcome!", // Email subject
     html: template, // Final HTML body
@@ -85,10 +93,18 @@ app.post("/send-email", (req, res) => {
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
       console.error(err);
-      res.status(500).send("Error sending email");
+      res.status(500).json({
+        success: false,
+        message: "Error sending email",
+        error: err.message,
+      });
     } else {
       console.log("Email sent: " + info.response);
-      res.send("Email sent successfully!");
+      res.status(200).json({
+        success: true,
+        message: "Email sent successfully!",
+        data: info.response,
+      });
     }
   });
 });
