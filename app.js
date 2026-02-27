@@ -2,9 +2,8 @@ require("dotenv").config({ quiet: true });
 
 const cors = require("cors");
 const express = require("express");
-
-// Import the Nodemailer library
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
 
 const fs = require("fs");
 const path = require("path");
@@ -15,16 +14,43 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
-// app.use(cors());
-app.use(
-  cors({
-    origin: ["http://localhost:4200"],
-    methods: ["POST"],
-  }),
+app.use(cors());
+
+// Initialize OAuth2 client
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GMAIL_CLIENT_ID,
+  process.env.GMAIL_CLIENT_SECRET,
+  process.env.GMAIL_REDIRECT_URL,
 );
 
+// Set the refresh token
+oauth2Client.setCredentials({
+  refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+});
+
+// Create transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    type: "OAuth2",
+    user: process.env.GMAIL_USER,
+    clientId: process.env.GMAIL_CLIENT_ID,
+    clientSecret: process.env.GMAIL_CLIENT_SECRET,
+    refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+  },
+});
+
+// Test transporter
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ Transporter error:", error);
+  } else {
+    console.log("✅ Transporter ready to send emails");
+  }
+});
+
 // Create a transporter object
-let transporter = nodemailer.createTransport({
+/* let transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
   secure: false, // use false for STARTTLS; true for SSL on port 465
@@ -33,6 +59,7 @@ let transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+ */
 
 // Define route to handle form submission
 app.post("/send-email", (req, res) => {
