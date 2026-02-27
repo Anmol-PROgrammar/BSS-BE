@@ -16,6 +16,28 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+console.log("=== ENV DEBUG ===");
+console.log("GMAIL_USER:", process.env.GMAIL_USER);
+console.log(
+  "GMAIL_CLIENT_ID:",
+  process.env.GMAIL_CLIENT_ID
+    ? process.env.GMAIL_CLIENT_ID.substring(0, 15) + "..."
+    : "NOT SET",
+);
+console.log(
+  "GMAIL_CLIENT_SECRET:",
+  process.env.GMAIL_CLIENT_SECRET
+    ? process.env.GMAIL_CLIENT_SECRET.substring(0, 15) + "..."
+    : "NOT SET",
+);
+console.log(
+  "GMAIL_REFRESH_TOKEN:",
+  process.env.GMAIL_REFRESH_TOKEN
+    ? process.env.GMAIL_REFRESH_TOKEN.substring(0, 15) + "..."
+    : "NOT SET",
+);
+console.log("================\n");
+
 // Initialize OAuth2 client
 const oauth2Client = new google.auth.OAuth2(
   process.env.GMAIL_CLIENT_ID,
