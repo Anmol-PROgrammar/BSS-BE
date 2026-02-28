@@ -2,12 +2,11 @@ require("dotenv").config({ quiet: true });
 
 const cors = require("cors");
 const express = require("express");
-const nodemailer = require("nodemailer");
+const MailComposer = require("nodemailer/lib/mail-composer"); // only for building raw message
 const { google } = require("googleapis");
 
 const fs = require("fs");
 const path = require("path");
-const { fileURLToPath } = require("url");
 
 const PORT = process.env.PORT || 3000;
 
@@ -23,56 +22,22 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.GMAIL_REDIRECT_URL,
 );
 
-// Set the refresh token
 oauth2Client.setCredentials({
   refresh_token: process.env.GMAIL_REFRESH_TOKEN,
 });
 
-// Create transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    type: "OAuth2",
-    user: process.env.GMAIL_USER,
-    clientId: process.env.GMAIL_CLIENT_ID,
-    clientSecret: process.env.GMAIL_CLIENT_SECRET,
-    refreshToken: process.env.GMAIL_REFRESH_TOKEN,
-  },
-});
-
-// Test transporter
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ Transporter error:", error);
-  } else {
-    console.log("✅ Transporter ready to send emails");
-  }
-});
-
-// Create a transporter object
-/* let transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // use false for STARTTLS; true for SSL on port 465
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
- */
+// Gmail API client (HTTP, not SMTP)
+const gmail = google.gmail({ version: "v1", auth: oauth2Client });
 
 // Define route to handle form submission
-app.post("/send-email", (req, res) => {
-  // Extract form data from request body
+app.post("/send-email", async (req, res) => {
   const { FullName, EmailId, PhoneNumber, Message } = req.body;
 
-  // Read HTML template file
   let template = fs.readFileSync(
     path.join(__dirname, "View", "emailTemplate.html"),
     "utf-8",
   );
 
-  //  Replace placeholders with dynamic data
   template = template
     .replace("{{fullName}}", FullName)
     .replace("{{fullName}}", FullName)
@@ -80,18 +45,18 @@ app.post("/send-email", (req, res) => {
     .replace("{{phoneNumber}}", PhoneNumber)
     .replace("{{message}}", Message);
 
-  // Configure the mailoptions object
-  let mailOptions = {
-    from: process.env.EMAIL_USER, // Sender email
-    to: EmailId, // Recipient email (user)
-    bcc: process.env.EMAIL_OWNER, // Owner hidden in BCC
-    subject: "Welcome!", // Email subject
-    html: template, // Final HTML body
+  const mailOptions = {
+    from: `Black Shadow Security <${process.env.GMAIL_USER}>`,
+    to: EmailId,
+    bcc: process.env.EMAIL_OWNER,
+    subject: `Thanks for reaching out, ${FullName}`,
+    html: template,
+    textEncoding: "base64",
     attachments: [
       {
-        filename: "android-chrome-192x192.png", // File fullName of image
-        path: "./assets/android-chrome-192x192.png", // Path to image file
-        cid: "logo", // Must match cid in HTML
+        filename: "android-chrome-192x192.png",
+        path: "./assets/android-chrome-192x192.png",
+        cid: "logo",
       },
       {
         filename: "icons8-instagram-logo-94.png",
@@ -116,24 +81,35 @@ app.post("/send-email", (req, res) => {
     ],
   };
 
-  // Send the email
-  transporter.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({
-        success: false,
-        message: "Error sending email",
-        error: err.message,
-      });
-    } else {
-      console.log("Email sent: " + info.response);
-      res.status(200).json({
-        success: true,
-        message: "Email sent successfully!",
-        data: info.response,
-      });
-    }
-  });
+  try {
+    // Build raw MIME message using MailComposer, then send via Gmail HTTP API
+    const mail = new MailComposer(mailOptions);
+    const message = await mail.compile().build();
+    const rawMessage = Buffer.from(message)
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+
+    const result = await gmail.users.messages.send({
+      userId: "me",
+      requestBody: { raw: rawMessage },
+    });
+
+    console.log("Email sent successfully:", result.data.id);
+    res.status(200).json({
+      success: true,
+      message: "Email sent successfully!",
+      data: result.data.id,
+    });
+  } catch (err) {
+    console.error("Error sending email:", err);
+    res.status(500).json({
+      success: false,
+      message: "Error sending email",
+      error: err.message,
+    });
+  }
 });
 
 app.listen(PORT, () => {
