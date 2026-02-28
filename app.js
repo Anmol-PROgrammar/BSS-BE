@@ -12,8 +12,15 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGIN,
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  }),
+);
+
 app.use(express.json());
-app.use(cors());
 
 // Initialize OAuth2 client
 const oauth2Client = new google.auth.OAuth2(
